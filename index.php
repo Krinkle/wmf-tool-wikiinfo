@@ -20,9 +20,9 @@ $I18N = new TsIntuition( 'Getwikiapi' /* textdomain */ );
 
 $toolConfig = array(
 	'displayTitle'	=> _( 'title' ),
-	'simplePath'	=> '/getWikiAPI.php',
-	'revisionId'	=> '0.2.0',
-	'revisionDate'	=> $I18N->dateFormatted( '2012-02-13' ) ,
+	'simplePath'	=> '/getWikiAPI/',
+	'revisionId'	=> '0.2.1',
+	'revisionDate'	=> $I18N->dateFormatted( '2012-03-28' ) ,
 	'I18N'			=> $I18N,
 );
 
@@ -46,7 +46,7 @@ kfConnectToolserverDB();
 $toolSettings = array(
 	'wikiids' => getParamVar( 'wikiids', '', $_REQUEST ),
 	'format' => getParamVar( 'format', 'xhtml', $_REQUEST ),
-	'callback' => getParamVar( 'callback', '', $_REQUEST ),
+	'callback' => getParamVar( 'callback', null, $_REQUEST ),
 );
 $params = array();
 $params['wikiids'] = $toolSettings['wikiids'];
@@ -134,12 +134,12 @@ $form = '<form class="colly ns" action="' . $Tool->remoteBasePath . '" method="g
 				<legend>' . _( 'form-legend-settings', 'krinkle' ) . '</legend>
 
 				<label for="wikiids">' . _( 'label-wikiids' ) . _g( 'colon-separator' ) . '</label>
-				<input type="text" id="wikiids" name="wikiids" placeholder="wiki" value="' . kfEscapeHTML( $toolSettings['wikiids'] ) . '" />
+				<input type="text" id="wikiids" name="wikiids" placeholder="wiki" value="' . htmlspecialchars( $toolSettings['wikiids'] ) . '" />
 				<span>commonswiki, nl, enwiki_p, de.wikipedia, http://meta.wikimedia.org, http://wikisource.org/?diff=3 ' . _g( 'etc' ) . '</span>
 				<br />
 
 				<label></label>
-				<input type="submit" nof value="' . kfEscapeHTML( _g('form-submit') ) . '" />
+				<input type="submit" nof value="' . htmlspecialchars( _g('form-submit') ) . '" />
 			</fieldset>
 		</form>';
 $Tool->addOut( $form );
