@@ -11,26 +11,26 @@
  * Configuration
  * -------------------------------------------------
  */
-// BaseTools
-require_once( '/home/krinkle/common/InitTool.php' );
-// Localization
+// BaseTool & Localization
+require_once( __DIR__ . '/../ts-krinkle-basetool/InitTool.php' );
 require_once( KR_TSINT_START_INC );
 
-$I18N = new TsIntuition( 'Getwikiapi' /* textdomain */ );
+$I18N = new TsIntuition( 'Getwikiapi' );
 
 $toolConfig = array(
-	'displayTitle'	=> _( 'title' ),
-	'simplePath'	=> '/getWikiAPI/',
-	'revisionId'	=> '0.2.1',
-	'revisionDate'	=> $I18N->dateFormatted( '2012-03-28' ) ,
-	'I18N'			=> $I18N,
+	'displayTitle'     => _( 'title' ),
+	'remoteBasePath'   => $kgConf->getRemoteBase() . '/getWikiAPI/',
+	'localBasePath'    => __DIR__,
+	'revisionId'       => '0.3.0',
+	'revisionDate'     => '2012-03-28',
+	'I18N'             => $I18N,
 );
 
-$Tool = BaseTool::newFromArray( $toolConfig );
+$kgBaseTool = BaseTool::newFromArray( $toolConfig );
+$kgBaseTool->setSourceInfoGithub( 'Krinkle', 'ts-krinkle-getWikiAPI', __DIR__ );
 
-$Tool->doHtmlHead();
-$Tool->doStartBodyWrapper();
-
+$kgBaseTool->doHtmlHead();
+$kgBaseTool->doStartBodyWrapper();
 
 /**
  * Database connection
@@ -90,7 +90,7 @@ function getDBSelectArray( $wikiidEscaped ) {
 }
 // Do the query
 function doQueryForWikiData( $wikiid ) {
-	global $Tool, $kgConf;
+	global $kgBaseTool, $kgConf;
 
 	$wikiidClean = cleanWikiID( $wikiid );
 
@@ -127,9 +127,9 @@ function doQueryForWikiData( $wikiid ) {
  * Input form
  * -------------------------------------------------
  */
-$Tool->addOut( _( 'input' ), 'h3', array( 'id' => 'input' ) );
+$kgBaseTool->addOut( _( 'input' ), 'h3', array( 'id' => 'input' ) );
 
-$form = '<form class="colly ns" action="' . $Tool->remoteBasePath . '" method="get">
+$form = '<form class="colly ns" action="' . $kgBaseTool->remoteBasePath . '" method="get">
 			<fieldset>
 				<legend>' . _( 'form-legend-settings', 'krinkle' ) . '</legend>
 
@@ -142,7 +142,7 @@ $form = '<form class="colly ns" action="' . $Tool->remoteBasePath . '" method="g
 				<input type="submit" nof value="' . htmlspecialchars( _g('form-submit') ) . '" />
 			</fieldset>
 		</form>';
-$Tool->addOut( $form );
+$kgBaseTool->addOut( $form );
 
 
 /**
@@ -165,7 +165,7 @@ if ( $toolSettings['wikiids'] ) :
 		// which we handle ourselfs here in the GUI
 		foreach ( $results as $wikiid => $result ) {
 
-			$Tool->addOut( _( 'output', array( 'variables' => array( $wikiid ) ) ), 'h3', array( 'id' => 'output' ) );
+			$kgBaseTool->addOut( _( 'output', array( 'variables' => array( $wikiid ) ) ), 'h3', array( 'id' => 'output' ) );
 
 			if ( !$result['match'] ) {
 
@@ -173,7 +173,7 @@ if ( $toolSettings['wikiids'] ) :
 					'variables' => array( $wikiid ),
 					'escape' => 'html',
 				);
-				$Tool->addOut( '<p><em>' . _( 'no-matches', $opts ) . '</em></p>' );
+				$kgBaseTool->addOut( '<p><em>' . _( 'no-matches', $opts ) . '</em></p>' );
 
 			} else {
 				$table = '<table class="wikitable">';
@@ -183,7 +183,7 @@ if ( $toolSettings['wikiids'] ) :
 				}
 				$table .= '</table>';
 
-				$Tool->addOut( $table );
+				$kgBaseTool->addOut( $table );
 			}
 
 		}
@@ -194,18 +194,18 @@ if ( $toolSettings['wikiids'] ) :
 	$permalinks = '<strong>' . _( 'formats-heading', array( 'escape' => 'html' ) ) . '</strong>';
 	$permalinks . '<ul>';
 	foreach ( kfApiFormats() as $format ) {
-		$permalinks .= '<li><a href="' . htmlspecialchars( $Tool->generatePermalink( array_merge( $params, array( 'format' => $format ) ) ) ) . '">' . "$format</a></li>\n";
+		$permalinks .= '<li><a href="' . htmlspecialchars( $kgBaseTool->generatePermalink( array_merge( $params, array( 'format' => $format ) ) ) ) . '">' . "$format</a></li>\n";
 	}
 	$permalinks . '</ul>';
-	$Tool->addOut( $permalinks );
+	$kgBaseTool->addOut( $permalinks );
 
 endif;
 
-$Tool->addOut( $I18N->getPromoBox() );
+$kgBaseTool->addOut( $I18N->getPromoBox() );
 
 
 /**
- * Close up
+ * Spit it out
  * -------------------------------------------------
  */
-$Tool->flushMainOutput();
+$kgBaseTool->flushMainOutput();
