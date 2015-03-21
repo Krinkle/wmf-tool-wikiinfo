@@ -25,7 +25,7 @@ $I18N = new Intuition( 'getwikiapi' );
 $kgBase = BaseTool::newFromArray( array(
 	'displayTitle' => $I18N->msg( 'title' ),
 	'remoteBasePath' => dirname( $kgConf->getRemoteBase() ). '/',
-	'revisionId' => '0.4.0',
+	'revisionId' => '1.4.0',
 	'styles' => array(
 		'main.css',
 	),
