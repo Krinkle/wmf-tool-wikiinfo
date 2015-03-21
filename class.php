@@ -126,22 +126,44 @@ class WikiInfoTool extends KrToolBaseClass {
 		$result = null;
 
 		if ( $normalised ) {
+			// Note: Make separate queries so that we can
+			// prioritise which match is preferred
+			// E.g. "nl" should match "dbname=nlwiki", then
+			// "dbname=nlwiktionary", then "url=http://nds-nl.wikipedia.org"
 			$rows = LabsDB::query( LabsDB::getMetaDB(),
 				'SELECT dbname, lang, name, family, url
 				FROM wiki
-				WHERE dbname LIKE :namewikix
-				OR dbname LIKE :namex
-				OR url LIKE :xurlx
+				WHERE dbname LIKE :namewiki
 				LIMIT 1',
 				array(
-					':namewikix' => "{$normalised}wiki%",
-					':namex' => "{$normalised}%",
-					':xurlx' => "%{$normalised}%",
+					':namewiki' => "{$normalised}wiki%",
 				)
 			);
+			if ( !$rows ) {
+				$rows = LabsDB::query( LabsDB::getMetaDB(),
+					'SELECT dbname, lang, name, family, url
+					FROM wiki
+					WHERE dbname LIKE :name
+					LIMIT 1',
+					array(
+						':name' => "{$normalised}%",
+					)
+				);
+			}
+			if ( !$rows ) {
+				$rows = LabsDB::query( LabsDB::getMetaDB(),
+					'SELECT dbname, lang, name, family, url
+					FROM wiki
+					WHERE url LIKE :name
+					LIMIT 1',
+					array(
+						':name' => "%{$normalised}%",
+					)
+				);
+			}
 
-			$dbinfo = $rows && isset( $rows[0] ) ? $rows[0] : false;
-			if ( $dbinfo ) {
+			if ( isset( $rows[0] ) ) {
+				$dbinfo = $rows[0];
 				$result = array(
 					'dbname' => $dbinfo['dbname'],
 					'lang' => $dbinfo['lang'],
