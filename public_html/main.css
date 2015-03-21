@@ -1,0 +1,31 @@
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.glyphicon-spin {
+  animation: spin 1s infinite linear;
+  transform-origin: center;
+}
+
+.ot-spinner {
+  display: inline-block;
+  opacity: 0;
+  max-width: 0;
+
+  transition: opacity 0.2s ease, max-width 0.4s ease;
+}
+
+.ot-is-active {
+  cursor: progress;
+}
+
+.ot-has-spinner.ot-is-active .ot-spinner {
+  opacity: 1;
+  /* 50px is more than needed, this affects animation duration */
+  max-width: 50px;
+}

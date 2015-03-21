@@ -15,6 +15,7 @@ class WikiInfoTool extends KrToolBaseClass {
 			'wikiids' => $kgReq->getVal( 'wikiids', '' ),
 			'format' => $kgReq->getVal( 'format', '_tool' ),
 			'callback' => $kgReq->getVal( 'callback', null ),
+			'_tool' => $kgReq->getVal( '_tool', null ),
 		);
 		$results = null;
 
@@ -23,16 +24,10 @@ class WikiInfoTool extends KrToolBaseClass {
 			kfApiExport( $results, $params['format'], $params['callback'], '_tool' );
 		}
 
-		$kgBase->setLayout( 'header', array( 'captionText' => $I18N->msg( 'description' ) ) );
-
-		$kgBase->addOut( '<div class="container">' );
-
-		$this->showForm( $params );
-
 		// If kfApiExport didn't terminate the request, that means this wasn't an API request.
 		// Show the results in the web page instead.
+		$resultsHtml = '';
 		if ( $results ) {
-
 			// List of links to API requests with different formats
 			$permalinks = '<strong>' . $I18N->msg( 'formats-heading', array( 'escape' => 'html' ) ) . '</strong>';
 			$permalinks .= '<ul class="nav nav-pills">';
@@ -42,21 +37,19 @@ class WikiInfoTool extends KrToolBaseClass {
 				) ) ) . '">' . "{$data['label']}</a></li>\n";
 			}
 			$permalinks .= '</ul>';
-			$kgBase->addOut( $permalinks );
+			$resultsHtml .= $permalinks;
 
 			foreach ( $results as $result ) {
-				$kgBase->addOut( Html::element( 'h2', array( 'id' => 'output' ),
+				$resultsHtml .= Html::element( 'h2', array( 'id' => 'output' ),
 					$I18N->msg( 'output', array( 'variables' => array( $result['input'] ) ) )
-				) );
+				);
 				if ( !$result['match'] ) {
- 					$kgBase->addOut(
-						'<p><em>' .
+					$resultsHtml .= '<p><em>' .
 						$I18N->msg( 'no-matches', array(
 							'variables' => array( $result['input'] ),
 							'escape' => 'html',
 						) ) .
-						'</em></p>'
-					);
+						'</em></p>';
 				} else {
 					$table = '<table class="table table-hover">';
 					foreach ( $result['data'] as $type => $value ) {
@@ -65,11 +58,23 @@ class WikiInfoTool extends KrToolBaseClass {
 					}
 					$table .= '</table>';
 
-					$kgBase->addOut( $table );
+					$resultsHtml .= $table;
 				}
 			}
 		}
 
+		// Ajax view update
+		if ( $params['_tool'] === 'ajax' ) {
+			header( 'Content-Type: text/html; charset=utf-8' );
+			echo $resultsHtml;
+			die;
+		}
+
+		// Full page view
+		$kgBase->setLayout( 'header', array( 'captionText' => $I18N->msg( 'description' ) ) );
+		$kgBase->addOut( '<div class="container">' );
+		$this->showForm( $params );
+		$kgBase->addOut( '<div id="ot-result">' . $resultsHtml . '</div>' );
 		// Close wrapping container
 		$kgBase->addOut( '</div>' );
 	}

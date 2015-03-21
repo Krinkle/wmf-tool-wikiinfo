@@ -26,6 +26,12 @@ $kgBase = BaseTool::newFromArray( array(
 	'displayTitle' => $I18N->msg( 'title' ),
 	'remoteBasePath' => dirname( $kgConf->getRemoteBase() ). '/',
 	'revisionId' => '0.4.0',
+	'styles' => array(
+		'main.css',
+	),
+	'scripts' => array(
+		'main.js',
+	),
 	'I18N' => $I18N,
 ) );
 $kgBase->setSourceInfoGithub( 'Krinkle', 'wmf-tool-wikiinfo', dirname( __DIR__ ) );
