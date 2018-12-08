@@ -2,8 +2,7 @@
 /**
  * Main index
  *
- * @author Timo Tijhof, 2011-2015
- * @license http://krinkle.mit-license.org/
+ * @copyright 2011-2018 Timo Tijhof
  * @package wmf-tool-wikiinfo
  */
 
@@ -13,17 +12,16 @@
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../class.php';
 
 $tool = new WikiInfoTool();
+require_once __DIR__ . '/../config.php';
 
 $I18N = new Intuition( 'getwikiapi' );
 
 $kgBase = BaseTool::newFromArray( array(
 	'displayTitle' => $I18N->msg( 'title' ),
-	'remoteBasePath' => dirname( $kgConf->getRemoteBase() ). '/',
-	'revisionId' => '1.5.0',
+	'remoteBasePath' => dirname( $_SERVER['PHP_SELF'] ),
 	'styles' => array(
 		'main.css',
 	),
